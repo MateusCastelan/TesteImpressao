@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TesteImpressao.MainPage"
+             xmlns:vm="clr-namespace:TesteImpressao.ViewModels">
+
+    <ContentPage.BindingContext>
+        <vm:MainPageViewModel />
+    </ContentPage.BindingContext>
+
+    <StackLayout>
+        <Button Text="Scan for Devices"
+                Command="{Binding StartScanningCommand}" />
+
+        <ActivityIndicator IsRunning="{Binding IsScanning}" 
+                           IsVisible="{Binding IsScanning}" 
+                           VerticalOptions="Center" 
+                           HorizontalOptions="Center" />
+
+        <Label Text="{Binding StatusMessage}" 
+               VerticalOptions="Center" 
+               HorizontalOptions="Center" 
+               Margin="10" />
+
+        <ListView x:Name="DevicesListView" ItemsSource="{Binding Devices}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Name}" Detail="{Binding Id}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        
+    </StackLayout>
+</ContentPage>
