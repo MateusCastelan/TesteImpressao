@@ -25,10 +25,15 @@
         <ListView x:Name="DevicesListView" ItemsSource="{Binding Devices}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextCell Text="{Binding Name}" Detail="{Binding Id}"/>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="{Binding Name}" />
+                            <Label Text="{Binding IsConnected, Converter={StaticResource BoolToConnectionStatusConverter}}" />
+                        </StackLayout>
+                    </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        
+
     </StackLayout>
 </ContentPage>

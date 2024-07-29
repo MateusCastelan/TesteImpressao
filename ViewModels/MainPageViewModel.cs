@@ -1,21 +1,22 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Plugin.BLE.Abstractions.Contracts;
+﻿using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System;
 using Plugin.BLE.Abstractions.EventArgs;
+using TesteImpressao.Models;
 
 namespace TesteImpressao.ViewModels
 {
     public partial class MainPageViewModel : ObservableObject
     {
         private readonly IAdapter _adapter;
-        private readonly ObservableCollection<IDevice> _devices;
+        private readonly ObservableCollection<DeviceWrapper> _devices;
 
-        public ObservableCollection<IDevice> Devices => _devices;
+        public ObservableCollection<DeviceWrapper> Devices => _devices;
 
         [ObservableProperty]
         private string _statusMessage;
@@ -27,7 +28,7 @@ namespace TesteImpressao.ViewModels
         {
             var bluetoothLE = CrossBluetoothLE.Current;
             _adapter = bluetoothLE.Adapter;
-            _devices = new ObservableCollection<IDevice>();
+            _devices = new ObservableCollection<DeviceWrapper>();
 
             _adapter.DeviceDiscovered += OnDeviceDiscovered;
             _adapter.ScanTimeoutElapsed += OnScanTimeoutElapsed;
@@ -42,9 +43,9 @@ namespace TesteImpressao.ViewModels
         {
             try
             {
-                if (args.Device != null && !_devices.Contains(args.Device))
+                if (args.Device != null && !_devices.Any(d => d.Device.Id == args.Device.Id))
                 {
-                    _devices.Add(args.Device);
+                    _devices.Add(new DeviceWrapper(args.Device));
                     StatusMessage = "Device found: " + args.Device.Name;
                     Debug.WriteLine($"Device found: {args.Device.Name}, Id: {args.Device.Id}");
                 }
@@ -65,20 +66,35 @@ namespace TesteImpressao.ViewModels
 
         private void OnDeviceConnected(object sender, DeviceEventArgs args)
         {
-            StatusMessage = "Connected to: " + args.Device.Name;
-            Debug.WriteLine($"Connected to: {args.Device.Name}, Id: {args.Device.Id}");
+            var deviceWrapper = _devices.FirstOrDefault(d => d.Device.Id == args.Device.Id);
+            if (deviceWrapper != null)
+            {
+                deviceWrapper.IsConnected = true;
+                StatusMessage = "Connected to: " + args.Device.Name;
+                Debug.WriteLine($"Connected to: {args.Device.Name}, Id: {args.Device.Id}");
+            }
         }
 
         private void OnDeviceDisconnected(object sender, DeviceEventArgs args)
         {
-            StatusMessage = "Disconnected from: " + args.Device.Name;
-            Debug.WriteLine($"Disconnected from: {args.Device.Name}, Id: {args.Device.Id}");
+            var deviceWrapper = _devices.FirstOrDefault(d => d.Device.Id == args.Device.Id);
+            if (deviceWrapper != null)
+            {
+                deviceWrapper.IsConnected = false;
+                StatusMessage = "Disconnected from: " + args.Device.Name;
+                Debug.WriteLine($"Disconnected from: {args.Device.Name}, Id: {args.Device.Id}");
+            }
         }
 
         private void OnDeviceConnectionLost(object sender, DeviceEventArgs args)
         {
-            StatusMessage = "Connection lost to: " + args.Device.Name;
-            Debug.WriteLine($"Connection lost to: {args.Device.Name}, Id: {args.Device.Id}");
+            var deviceWrapper = _devices.FirstOrDefault(d => d.Device.Id == args.Device.Id);
+            if (deviceWrapper != null)
+            {
+                deviceWrapper.IsConnected = false;
+                StatusMessage = "Connection lost to: " + args.Device.Name;
+                Debug.WriteLine($"Connection lost to: {args.Device.Name}, Id: {args.Device.Id}");
+            }
         }
 
         [RelayCommand]
@@ -114,15 +130,15 @@ namespace TesteImpressao.ViewModels
         }
 
         [RelayCommand]
-        public async Task ConnectToDeviceAsync(IDevice device)
+        public async Task ConnectToDeviceAsync(DeviceWrapper deviceWrapper)
         {
             try
             {
-                if (device != null)
+                if (deviceWrapper?.Device != null)
                 {
-                    StatusMessage = "Connecting to: " + device.Name;
-                    Debug.WriteLine($"Connecting to: {device.Name}, Id: {device.Id}");
-                    await _adapter.ConnectToDeviceAsync(device);
+                    StatusMessage = "Connecting to: " + deviceWrapper.Device.Name;
+                    Debug.WriteLine($"Connecting to: {deviceWrapper.Device.Name}, Id: {deviceWrapper.Device.Id}");
+                    await _adapter.ConnectToDeviceAsync(deviceWrapper.Device);
                 }
             }
             catch (Exception ex)
