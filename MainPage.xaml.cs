@@ -17,13 +17,14 @@ namespace TesteImpressao
             _viewModel = BindingContext as MainPageViewModel;
         }
 
-        private async void OnDeviceTapped(object sender, EventArgs e)
+        private async void OnDeviceTapped(object sender, ItemTappedEventArgs e)
         {
-            if (sender is TextCell textCell && textCell.BindingContext is DeviceWrapper deviceWrapper)
+            if (e.Item is DeviceWrapper deviceWrapper)
             {
                 await _viewModel.ConnectToDeviceAsync(deviceWrapper);
             }
-        }
 
+        ((ListView)sender).SelectedItem = null;
+        }
     }
 }

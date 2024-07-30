@@ -22,7 +22,7 @@
                HorizontalOptions="Center" 
                Margin="10" />
 
-        <ListView x:Name="DevicesListView" ItemsSource="{Binding Devices}">
+        <ListView x:Name="DevicesListView" ItemsSource="{Binding Devices}" ItemTapped="OnDeviceTapped">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
