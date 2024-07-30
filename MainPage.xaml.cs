@@ -1,6 +1,7 @@
 ﻿
 
 using Plugin.BLE.Abstractions.Contracts;
+using TesteImpressao.Models;
 using TesteImpressao.ViewModels;
 
 namespace TesteImpressao
@@ -18,11 +19,11 @@ namespace TesteImpressao
 
         private async void OnDeviceTapped(object sender, EventArgs e)
         {
-            if (sender is TextCell textCell && textCell.BindingContext is IDevice device)
+            if (sender is TextCell textCell && textCell.BindingContext is DeviceWrapper deviceWrapper)
             {
-                await _viewModel.ConnectToDeviceAsync(device);
+                await _viewModel.ConnectToDeviceAsync(deviceWrapper);
             }
         }
-    }
 
+    }
 }
