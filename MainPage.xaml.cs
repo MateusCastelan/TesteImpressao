@@ -16,9 +16,9 @@ namespace TesteImpressao
             _viewModel = BindingContext as MainPageViewModel;
         }
 
-        private async void OnDeviceTapped(object sender, EventArgs e)
+        private async void OnDeviceTapped(object sender, ItemTappedEventArgs e)
         {
-            if (sender is TextCell textCell && textCell.BindingContext is IDevice device)
+            if (e.Item is IDevice device)
             {
                 await _viewModel.ConnectToDeviceAsync(device);
             }

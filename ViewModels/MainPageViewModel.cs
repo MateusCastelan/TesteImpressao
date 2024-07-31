@@ -116,14 +116,20 @@ namespace TesteImpressao.ViewModels
         [RelayCommand]
         public async Task ConnectToDeviceAsync(IDevice device)
         {
+            if (device == null)
+            {
+                StatusMessage = "No device selected.";
+                return;
+            }
+
             try
             {
-                if (device != null)
-                {
-                    StatusMessage = "Connecting to: " + device.Name;
-                    Debug.WriteLine($"Connecting to: {device.Name}, Id: {device.Id}");
-                    await _adapter.ConnectToDeviceAsync(device);
-                }
+                StatusMessage = $"Connecting to: {device.Name}, Id: {device.Id}";
+                Debug.WriteLine($"Connecting to: {device.Name}, Id: {device.Id}");
+                await _adapter.ConnectToDeviceAsync(device);
+
+                StatusMessage = $"Successfully connected to: {device.Name}, Id: {device.Id}";
+                Debug.WriteLine($"Successfully connected to: {device.Name}, Id: {device.Id}");
             }
             catch (Exception ex)
             {
