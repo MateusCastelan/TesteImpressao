@@ -25,7 +25,7 @@
         <ListView x:Name="DevicesListView" ItemsSource="{Binding Devices}" ItemTapped="OnDeviceTapped">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextCell Text="{Binding Name}" Detail="{Binding Id}"/>
+                    <TextCell Text="{Binding NativeDevice}" Detail="{Binding Id}"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

@@ -52,7 +52,7 @@ namespace TesteImpressao.ViewModels
                 if (args.Device != null && !_devices.Contains(args.Device))
                 {
                     _devices.Add(args.Device);
-                    StatusMessage = "Device found: " + args.Device.Name;
+                    StatusMessage = "Device found: " + args.Device.NativeDevice;
                     Debug.WriteLine($"Device found: {args.Device.Name}, Id: {args.Device.Id}");
                 }
             }
