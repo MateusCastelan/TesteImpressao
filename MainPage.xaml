@@ -29,6 +29,10 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        
+
+        <Button Text="Send Data to Printer"
+                Command="{Binding SendDataToPrinterCommand}"
+                CommandParameter="Your text to print" />
+
     </StackLayout>
 </ContentPage>

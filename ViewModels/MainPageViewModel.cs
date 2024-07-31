@@ -23,6 +23,13 @@ namespace TesteImpressao.ViewModels
         [ObservableProperty]
         private bool _isScanning;
 
+        private IDevice _selectedDevice;
+        public IDevice SelectedDevice
+        {
+            get => _selectedDevice;
+            set => SetProperty(ref _selectedDevice, value);
+        }
+
         public MainPageViewModel()
         {
             var bluetoothLE = CrossBluetoothLE.Current;
@@ -135,6 +142,40 @@ namespace TesteImpressao.ViewModels
             {
                 StatusMessage = $"Error during connection: {ex.Message}";
                 Debug.WriteLine($"Exception during connection: {ex}");
+            }
+        }
+
+        [RelayCommand]
+        public async Task SendDataToPrinterAsync(string data)
+        {
+            if (SelectedDevice == null)
+            {
+                StatusMessage = "No device selected.";
+                return;
+            }
+
+            try
+            {
+                var service = await SelectedDevice.GetServiceAsync(Guid.Parse("3bfa1b0c-64eb-439b-aee8-c5743766ffea"));
+                var characteristic = await service.GetCharacteristicAsync(Guid.Parse("3bfa1b0c-64eb-439b-aee8-c5743766ffea"));
+
+                if (characteristic != null)
+                {
+                    var bytes = System.Text.Encoding.UTF8.GetBytes(data);
+                    await characteristic.WriteAsync(bytes);
+                    StatusMessage = "Data sent to printer.";
+                    Debug.WriteLine("Data sent to printer.");
+                }
+                else
+                {
+                    StatusMessage = "Characteristic not found.";
+                    Debug.WriteLine("Characteristic not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error during data transfer: {ex.Message}";
+                Debug.WriteLine($"Exception during data transfer: {ex}");
             }
         }
     }

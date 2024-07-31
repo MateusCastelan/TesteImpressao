@@ -20,6 +20,7 @@ namespace TesteImpressao
         {
             if (e.Item is IDevice device)
             {
+                _viewModel.SelectedDevice = device;
                 await _viewModel.ConnectToDeviceAsync(device);
             }
         }
